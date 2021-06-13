@@ -21,16 +21,16 @@ namespace ScamSimulatorCore.core
         public double SpendingDistributionMean { get; set; } = 0;
         public double SpendingDistributionDeviation { get; set; } = 1;
 
-        public int PopulationPlateau { get; } = 1000000;
-        public decimal SpendingPlateau { get; } = 1000;
+        public int PopulationPlateau { get; } = 500000;
+        public decimal SpendingPlateau { get; } = 10000;
 
-        //public int TileSetPlateau { get; } = 750;
+        public int TileSetPlateau { get; set; } = 25;
 
         ////////////////////////////////////////
         public double Pick(double mean, double dev)
         {
-            return Math.Max(0, Math.Min(1, mean - dev + 2*dev*RNG.NextDouble()));
+            return Math.Max(0, Math.Min(1, mean - 0.5*dev + dev*RNG.NextDouble()));
         }
-
+        
     }
 }

@@ -11,7 +11,8 @@ namespace ScamSimulatorCore.core
         public decimal Wallet { get; set; } = 0;
         public List<Country> Countries { get; } = new List<Country>();
         public List<Player> PlayerBase { get; } = new List<Player>();
-        
+        public List<Player> ExPlayerBase { get; } = new List<Player>();
+
         public List<TileSet> MarketPlace { get; } = new List<TileSet>();
         public decimal TransactionFlatTax { get; set; } = 7.5M;
         public decimal TransactionPercTax { get; set; } = 1;
@@ -88,7 +89,7 @@ namespace ScamSimulatorCore.core
             decimal avgspending = 0;
             foreach (Player p in PlayerBase)
             {
-                avgspending += (p.CurrentSpending - p.Wallet)/ p.MaximumSpending;
+                avgspending += Math.Max(0,p.CurrentSpending - p.Wallet)/ p.MaximumSpending;
             }
             return (double)(avgspending/ PlayerBase.Count);
         }
@@ -109,8 +110,13 @@ namespace ScamSimulatorCore.core
             PlayerBase.Add(p);
             return p;
         }
+        public void UnregisterPlayer(Player p)
+        {
+            PlayerBase.Remove(p);
+            ExPlayerBase.Add(p);
+        }
         public Player GetRandomPlayer() {
-            double ratio = (double)PlayerBase.Count / Options.PopulationPlateau;
+            double ratio = (double)(PlayerBase.Count+ExPlayerBase.Count) / Options.PopulationPlateau;
             if (1-ratio > RNG.NextDouble() )
             {
                 return CreatePlayer();

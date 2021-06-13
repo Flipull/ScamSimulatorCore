@@ -13,7 +13,27 @@ namespace ScamSimulatorCore.core
         public int Population { get; }
         public int TotalTiles { get; }
         public int SoldTiles { get; set; } = 0;
-        public decimal NewTileValue { get; set; } = 0.10M;
+        public decimal NewTileValue
+        {
+            get
+            {
+                if (SoldTiles == 0) return 0.1M;
+                return Math.Max(0.1M, Worth / SoldTiles)+0.1M;
+                int s = 0;
+                decimal v = 0;
+                for (int x = Math.Max(0, SoldTileSets.Count - 10); x < SoldTileSets.Count; x++)
+                {
+                    TileSet t = SoldTileSets[x];
+                    v += t.BuyPrice;
+                    s += t.Amount;
+                }
+                if (s < 10)
+                    return 0.1M;
+                else
+                    return Math.Max(0.1M, v / s);// + 0.1M;
+                //return Worth / TotalTiles + 0.1M; 
+            }
+        }
         public List<TileSet> SoldTileSets { get; } = new List<TileSet>();
 
         public Country(string name, int population, int area_sq, double richness = 0.5, double classness = 0.5)
@@ -46,7 +66,7 @@ namespace ScamSimulatorCore.core
                 throw new Exception();
             decimal value = NewTileValue * amount;
             //first create tileset
-            
+
             //needs better method - in order of density, high to low with some deviation
             TileSet t = new TileSet(this, amount, value,
                     Pick(DensityDistributionMean, DensityDistributionDeviation)
@@ -56,33 +76,26 @@ namespace ScamSimulatorCore.core
 
             //second update country
             Worth += value;
-            NewTileValue += value /* * amount*/ / TotalTiles;
-            
+            //NewTileValue += value /* * amount*/ / TotalTiles;
+
 
             return t;
         }
         public bool PlayerTilesSold(TileSet t, decimal new_value, decimal old_value)
         {
-            decimal tmp = NewTileValue;
 
             //assume t is 100% in this country
             int amount = t.Amount;
-            decimal real_value = NewTileValue*amount;
+            decimal real_value = NewTileValue * amount;
 
             //update country
-            decimal delta_value = (new_value - old_value) * amount/TotalTiles;
-            
-            NewTileValue += real_value /* * amount*/ / TotalTiles
-                    * (Worth+delta_value)/Worth;
-            
-            if (NewTileValue > 2*tmp)
-            {
-                Console.WriteLine("beh");
-            }
+            decimal delta_value = (new_value - old_value);// * amount/TotalTiles;
+
+            //NewTileValue += real_value /* * amount*/ / TotalTiles
+            //        * (Worth+delta_value)/Worth;
 
             Worth += delta_value;
             return true;
-
         }
     }
 }
