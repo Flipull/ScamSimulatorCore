@@ -17,21 +17,22 @@ namespace ScamSimulatorCore
                 Player p = b.GetRandomPlayer();
                 p.DecideAction();
 
-                if (iteration % 10000 == 0)
+                if (iteration % o.TileSetPlateauIncrementOffset == 0)
+                    o.TileSetPlateau = Math.Min(o.TileSetPlateau + o.TileSetPlateauIncrement, o.TileSetPlateauMax);
+                if (iteration < 10000 || iteration % 100000 == 0)
                 {
-                    if (iteration % 20000 == 0)
-                        o.TileSetPlateau = Math.Min(o.TileSetPlateau +25, 750);
+                    BankDataInfo i = b.Stats();
                     string s =
-                        string.Format("B{0:C2} C{1:C2} Ct{2:C2} T%{3:N4} P#{4} PM%{5:N4} PW{6:C2} PP{7:C2}", 
-                                    b.Wallet,
-                                    b.WorldValue(),
-                                    b.AvgCountryTileValue(),
-                                    (double)(b.SoldTiles()/b.TotalTiles()*100),
+                        string.Format("B{0:C2} C{1:C2} Ct{2:C4} T%{3:N1} P#{4} PM%{5:N1} PW{6:C2} PP{7:C2} EX{8:C2}",
+                                    i.BankWallet,
+                                    i.CountriesWorth,
+                                    i.AverageTileNewPrice,
+                                    100 * i.SoldTiles / (double)i.TotalTiles,
                                     b.PlayerBase.Count,
-                                    b.PlayerBaseAvgPercentageSpended(),
-                                    //b.PlayerBasePercentageSpended(),
-                                    b.PlayerBaseValue(),
-                                    b.PlayerBasePortfolio()
+                                    (100 * (double) i.PlayerSpend/ (double)i.PlayerMaxSpend),
+                                    i.PlayersWallet,
+                                    i.PlayersPortfolio,
+                                    i.ExPlayersWallet
                                 );
                     Console.WriteLine(s);
                 }

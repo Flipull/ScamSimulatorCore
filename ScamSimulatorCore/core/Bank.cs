@@ -27,6 +27,65 @@ namespace ScamSimulatorCore.core
             }
             CreatePlayer();
         }
+        public BankDataInfo Stats()
+        {
+            decimal cv = 0;
+            long ctt = 0;
+            long cts = 0;
+            decimal tv = 0;
+            foreach (Country c in Countries)
+            {
+                cv += c.Worth;
+                tv += c.NewTileValue;
+                ctt += c.TotalTiles;
+                cts += c.SoldTiles;
+            }
+            tv /= Countries.Count;
+
+            
+            decimal ps = 0;
+            decimal psm = 0;
+            decimal pv = 0;
+            decimal portv = 0;
+            decimal ex = 0;
+            foreach (Player p in PlayerBase)
+            {
+                if (p.Quitting)
+                    ex += p.Wallet;
+                else
+                {
+                    pv += p.Wallet;
+                    ps += Math.Max(0M, p.CurrentSpending - p.Wallet);
+                    psm += p.MaximumSpending;
+                    foreach (TileSet t in p.Portfolio)
+                    {
+                        portv += t.GetCurrentValue();
+                    }
+                }
+            }
+            foreach (Player p in ExPlayerBase)
+                ex += p.Wallet;
+
+
+            BankDataInfo i = new BankDataInfo()
+            {
+                BankWallet = Wallet,
+                CountriesWorth = cv,
+                SoldTiles = cts,
+                TotalTiles = ctt,
+                AverageTileNewPrice = tv,
+                PlayerCount = PlayerBase.Count,
+                PlayerSpend = ps,
+                PlayerMaxSpend = psm,
+                PlayersWallet = pv,
+                PlayersPortfolio = portv,
+                ExPlayersWallet = ex
+            };
+            
+
+
+            return i;
+        }
         public decimal WorldValue()
         {
             decimal v = 0;
@@ -41,8 +100,20 @@ namespace ScamSimulatorCore.core
             decimal v = 0;
             foreach (Player p in PlayerBase)
             {
-                v += p.Wallet;
+                if (!p.Quitting)
+                    v += p.Wallet;
             }
+            return v;
+        }
+        public decimal ExPlayerBaseValue()
+        {
+            decimal v = 0;
+            foreach (Player p in PlayerBase)
+                if (p.Quitting)
+                    v += p.Wallet;
+
+            foreach (Player p in ExPlayerBase)
+                    v += p.Wallet;
             return v;
         }
         public decimal PlayerBasePortfolio()
@@ -116,8 +187,9 @@ namespace ScamSimulatorCore.core
             ExPlayerBase.Add(p);
         }
         public Player GetRandomPlayer() {
-            double ratio = (double)(PlayerBase.Count+ExPlayerBase.Count) / Options.PopulationPlateau;
-            if (1-ratio > RNG.NextDouble() )
+            double ratio = Math.Min(1,(double)(PlayerBase.Count+ExPlayerBase.Count) / Options.PopulationPlateau);
+            double r2 = (1 - ratio) * (1 - ratio);
+            if ( (1-r2) < RNG.NextDouble() )
             {
                 return CreatePlayer();
             } else
@@ -128,14 +200,23 @@ namespace ScamSimulatorCore.core
                 return PlayerBase[idx];
             }
         }
-        public Country GetRandomCountry() {
+        public Country GetRandomCountry(bool fornewtiles = false) {
             //improvements left see docs
-            double c = RNG.NextDouble();
-            int idx = (int)((c * c) * Countries.Count);
-            return Countries[idx];
+            Country chosen;
+            double c;
+            int idx;
+            do
+            {
+                c = RNG.NextDouble();
+                idx = (int)((c * c) * Countries.Count);
+                chosen = Countries[idx];
+            } while (fornewtiles && chosen.SoldTiles == chosen.TotalTiles);
+            return chosen;
         }
         public bool BuyNewTiles(Player buyer, Country c, int amount)
         {
+            if (amount > Options.TileSetPlateau)
+                amount = Options.TileSetPlateau;
             decimal value = c.NewTileSetPrice(amount);
             if (!buyer.CanAffordSpending(value) || !c.CanCreateTiles(amount))
                 return false;
@@ -148,7 +229,6 @@ namespace ScamSimulatorCore.core
             TileSet t = c.CreateTilesForSelling(amount);
             t.Owner = buyer;
             buyer.Portfolio.Add(t);
-            t.BuyPrice = c.NewTileValue*amount;
             return true;
         }
         public bool BuyPlayersTiles(Player buyer, TileSet t)
@@ -173,19 +253,23 @@ namespace ScamSimulatorCore.core
             PullOffMarketplace(t);
             return true;
         }
-        public void PutOnMarketplace(TileSet t)
+        public bool PutOnMarketplace(TileSet t)
         {
+            if (t.SellPrice < 0.00001M)
+                return false;
             MarketPlace.Add(t);
             t.ForSale = true;
+            return true;
         }
 
         //public void UpdateOnMarketPlace()
         //obsolete can be done in portfolio of player
-
-        public void PullOffMarketplace(TileSet t)
+        
+        public bool PullOffMarketplace(TileSet t)
         {
             MarketPlace.Remove(t);
             t.ForSale = false;
+            return true;
         }
     }
 }

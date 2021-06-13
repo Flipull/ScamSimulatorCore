@@ -4,7 +4,18 @@ using System.Text;
 
 namespace ScamSimulatorCore.core
 {
-    class BankDataInfo
+    public struct BankDataInfo
     {
+        public decimal BankWallet;
+        public decimal CountriesWorth;
+        public long SoldTiles;
+        public long TotalTiles;
+        public decimal AverageTileNewPrice;
+        public long PlayerCount;
+        public decimal PlayerSpend;
+        public decimal PlayerMaxSpend;
+        public decimal PlayersWallet;
+        public decimal PlayersPortfolio;
+        public decimal ExPlayersWallet;
     }
 }

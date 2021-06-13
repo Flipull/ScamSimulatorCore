@@ -31,7 +31,7 @@ namespace ScamSimulatorCore.core
             MaximumSpending =
                 Math.Max(100M,
                     opt.SpendingPlateau *
-                    (Decimal) ((1+Whaley) *
+                    (Decimal) ((1+Whaley*5) *
                     opt.Pick(opt.SpendingDistributionMean, opt.SpendingDistributionDeviation)
                     )
                 );
@@ -84,20 +84,24 @@ namespace ScamSimulatorCore.core
             {
                 UpdateSale();
             }
-            if (Bank.RNG.NextDouble() < 0.2)
+            double spendratio = (double)Math.Max(0M, (CurrentSpending - Wallet) / MaximumSpending);
+            if (Bank.RNG.NextDouble() < 0.25 * spendratio) 
             {
                 SellOnMarket();
             }
-            if (Bank.RNG.NextDouble() < 0.049 * (double)(MaximumSpending/(CurrentSpending-Wallet + 1)))
+            if (Bank.RNG.NextDouble() < 0.099 * 1-spendratio)
             {
-                double ratio = (double)(CommunityOwner.SoldTiles() / CommunityOwner.TotalTiles());
-                if ( (1- ratio) < Bank.RNG.NextDouble())
+                Country c = CommunityOwner.GetRandomCountry();
+                double ratio = c.SoldTiles / (double)c.TotalTiles;
+                if (ratio < Bank.RNG.NextDouble())
                 {
                     BuyNew();
-                } else
-                {
-                    BuyOffered();
                 }
+                //else
+                //{
+                    if (!BuyOffered()) 
+                        BuyNew();
+                //}
             }
             if (Bank.RNG.NextDouble() < 0.0001)
             {
@@ -112,6 +116,7 @@ namespace ScamSimulatorCore.core
             {
                 if (!t.ForSale)
                 {
+                    t.SellPrice = ChooseSellPrice(t);
                     CommunityOwner.PutOnMarketplace(t);
                 }
             }
@@ -123,18 +128,23 @@ namespace ScamSimulatorCore.core
             double relaxness = (1 - Anxiety) * (1 + Shillyness) * (1 + Whaley) * (1 - (double)(CurrentSpending / MaximumSpending));
             double strictness = 1 - ((1 - Attention) * (1 - Intelligence));
             //improvements left see docs
-            return t.GetCurrentValue() +
-                            (decimal)(Bank.RNG.NextDouble() - 0.5 + relaxness - strictness) *
-                            t.GetCurrentValue();
+            return (t.GetCurrentValue() +
+                        (decimal)(Bank.RNG.NextDouble() - 0.5));
+            return (t.GetCurrentValue() +
+                        (decimal)(Bank.RNG.NextDouble() - 1 + relaxness + strictness) * t.GetCurrentValue()
+                        +
+                        t.BuyPrice +
+                        (decimal)(Bank.RNG.NextDouble() - 1 + relaxness + strictness) * t.BuyPrice
+                ) / 2;
         }
         public decimal ChooseSellPrice(TileSet t)
         {
             double relaxness = (1 - Anxiety) * (1+Shillyness) * (1+Whaley) * (1 - (double)(CurrentSpending / MaximumSpending));
             double strictness = 1 - ((1 - Attention) * (1 - Intelligence));
             //improvements left see docs
-            int divren = 2;
+            decimal price = 0;
             if (!Quitting)
-                return (t.GetCurrentValue() +
+                price = (t.GetCurrentValue() +
                             (decimal)(Bank.RNG.NextDouble() - 1 + relaxness + strictness) * t.GetCurrentValue()
                             +
                             t.BuyPrice +
@@ -144,14 +154,16 @@ namespace ScamSimulatorCore.core
             {
 
                 double lowlim = Math.Max(0, relaxness - strictness);
-                return (t.GetCurrentValue() +
+                price = (t.GetCurrentValue() +
                             (decimal)(Bank.RNG.NextDouble() - 1 + lowlim) * t.GetCurrentValue()
                             +
                             t.BuyPrice +
                             (decimal)(Bank.RNG.NextDouble() - 1 + lowlim) * t.BuyPrice
                     ) / 3;
             }
-
+            price = (t.GetCurrentValue() +
+                        (decimal)(Bank.RNG.NextDouble() - 0.5));
+            return Math.Max(0.001M, price);
         }
         public void SellOnMarket()
         {
@@ -162,7 +174,8 @@ namespace ScamSimulatorCore.core
             double c = Bank.RNG.NextDouble();
             int idx = (int)((c * c) * Portfolio.Count);
             if (!Portfolio[idx].ForSale) {
-                Portfolio[idx].SellPrice = ChooseSellPrice(Portfolio[idx]);
+                decimal price = ChooseSellPrice(Portfolio[idx]);
+                Portfolio[idx].SellPrice = price;
                 CommunityOwner.PutOnMarketplace(Portfolio[idx]);
             };
         }
@@ -198,9 +211,13 @@ namespace ScamSimulatorCore.core
         public void BuyNew()
         {
             double n = Bank.RNG.NextDouble();
-            int amount = (int)(n*n * CommunityOwner.Options.TileSetPlateau-5) +5;
-            CommunityOwner.BuyNewTiles(this, CommunityOwner.GetRandomCountry(),
-                                        amount);
+            double n2 = 1 - (1 - n) * (1 - n);
+            //int amount = (int)(n2 * CommunityOwner.Options.TileSetPlateau-5) +5;
+            
+            Country c = CommunityOwner.GetRandomCountry(true);
+            int amount = (int)(n2 * n2 * (double)((MaximumSpending - CurrentSpending + Wallet) / c.NewTileValue))+1;
+            CommunityOwner.BuyNewTiles(this, c,
+                                         amount);
         }
 
     }
