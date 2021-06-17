@@ -78,18 +78,18 @@ namespace CoreLibrary.core
                 BuyNew();
                 return;
             }
-
+            
             // 85% browsing, 10% selling, 4.9% buying, 0.1% quit
             //if (Bank.RNG.NextDouble() < 0.5)
             //{
                 UpdateSale();
             //}
             double spendratio = (double)Math.Max(0M, (CurrentSpending - Wallet) / MaximumSpending);
-            if (Bank.RNG.NextDouble() < 0.25 * spendratio) 
+            if (Bank.RNG.NextDouble() < 1.0 * spendratio) 
             {
                 SellOnMarket();
             }
-            if (Bank.RNG.NextDouble() < 0.25 * 1-spendratio)
+            if (Bank.RNG.NextDouble() < 1.0 * 1-spendratio)
             {
                 Country c = CommunityOwner.GetRandomCheapCountry();
                 double ratio = c.SoldTiles / (double)c.TotalTiles;

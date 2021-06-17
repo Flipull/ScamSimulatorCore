@@ -18,7 +18,8 @@ namespace ScamSimulatorCore
             long iteration = 1;
             string filename = DateTime.Now.ToString("yyyy-MM-dd HH-mm-ss") + ".txt";
             StreamWriter filewr = File.CreateText(filename);
-            
+            filewr.WriteLine("BankWallet,Sum of Countries Worth,Avg Tile Price, % of Tiles Sold,Number of Active Players,% of Player's money spend,All Active Players Wallets, All Active Players Product-Portfolios,Quitting Players Wallets");
+
             while (!Console.KeyAvailable || Console.ReadKey().Key != ConsoleKey.Q)
             {
                 Player p = b.GetRandomPlayer();

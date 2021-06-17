@@ -21,8 +21,8 @@ namespace CoreLibrary.core
         public double SpendingDistributionMean { get; set; } = 0;
         public double SpendingDistributionDeviation { get; set; } = 1;
         
-        public int PopulationPlateau { get; } = 400000;
-        public decimal SpendingPlateau { get; } = 10000;
+        public int PopulationPlateau { get; } = 40000;
+        public decimal SpendingPlateau { get; } = 1000;
 
         public int TileSetPlateauIncrementOffset { get; set; } = 500;
         public int TileSetPlateauStart { get; set; } = 10;//will be incremented first time
