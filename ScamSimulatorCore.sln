@@ -5,9 +5,17 @@ VisualStudioVersion = 16.0.29519.87
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScamSimulatorCore", "ScamSimulatorCore\ScamSimulatorCore.csproj", "{B5A3B6A5-8BAC-4408-A760-C42B8124983B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScamSimulatorCoreWPF", "ScamSimulatorCoreWPF\ScamSimulatorCoreWPF.csproj", "{F1549F8C-D5B9-4825-9C3B-C922FDB74B81}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScamSimulatorCoreWPF", "ScamSimulatorCoreWPF\ScamSimulatorCoreWPF.csproj", "{F1549F8C-D5B9-4825-9C3B-C922FDB74B81}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreLibrary", "CoreLibrary\CoreLibrary.csproj", "{D5A4A39B-C35E-49D2-A5E7-67C9141971C2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreLibrary", "CoreLibrary\CoreLibrary.csproj", "{D5A4A39B-C35E-49D2-A5E7-67C9141971C2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{E3406ADE-FD83-415A-A4CD-2F642B601EB2}"
+	ProjectSection(SolutionItems) = preProject
+		ScamSimulatorCore\bin\Debug\netcoreapp3.0\20210617 1809 - Fair market.png = ScamSimulatorCore\bin\Debug\netcoreapp3.0\20210617 1809 - Fair market.png
+		ScamSimulatorCore\bin\Debug\netcoreapp3.0\20210617 1809 - Fair market.txt = ScamSimulatorCore\bin\Debug\netcoreapp3.0\20210617 1809 - Fair market.txt
+		ScamSimulatorCore\bin\Debug\netcoreapp3.0\20210617 2328 - Price-fixed market.png = ScamSimulatorCore\bin\Debug\netcoreapp3.0\20210617 2328 - Price-fixed market.png
+		ScamSimulatorCore\bin\Debug\netcoreapp3.0\20210617 2328 - Price-fixed market.txt = ScamSimulatorCore\bin\Debug\netcoreapp3.0\20210617 2328 - Price-fixed market.txt
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
