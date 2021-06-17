@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ScamSimulatorCore.core
+namespace CoreLibrary.core
 {
-    static class Seed
+    internal static class Seed
     {
         public static IEnumerable<Country> enumerateCountries()
         {

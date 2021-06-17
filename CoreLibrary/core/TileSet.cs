@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ScamSimulatorCore.core
+namespace CoreLibrary.core
 {
-    class TileSet
+    public class TileSet
     {
         public Country MotherCountry { get; }
         public int Amount { get; }

@@ -3,7 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29519.87
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScamSimulatorCore", "ScamSimulatorCore\ScamSimulatorCore.csproj", "{B5A3B6A5-8BAC-4408-A760-C42B8124983B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScamSimulatorCore", "ScamSimulatorCore\ScamSimulatorCore.csproj", "{B5A3B6A5-8BAC-4408-A760-C42B8124983B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScamSimulatorCoreWPF", "ScamSimulatorCoreWPF\ScamSimulatorCoreWPF.csproj", "{F1549F8C-D5B9-4825-9C3B-C922FDB74B81}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreLibrary", "CoreLibrary\CoreLibrary.csproj", "{D5A4A39B-C35E-49D2-A5E7-67C9141971C2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +19,14 @@ Global
 		{B5A3B6A5-8BAC-4408-A760-C42B8124983B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B5A3B6A5-8BAC-4408-A760-C42B8124983B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B5A3B6A5-8BAC-4408-A760-C42B8124983B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F1549F8C-D5B9-4825-9C3B-C922FDB74B81}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F1549F8C-D5B9-4825-9C3B-C922FDB74B81}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F1549F8C-D5B9-4825-9C3B-C922FDB74B81}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F1549F8C-D5B9-4825-9C3B-C922FDB74B81}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D5A4A39B-C35E-49D2-A5E7-67C9141971C2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D5A4A39B-C35E-49D2-A5E7-67C9141971C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D5A4A39B-C35E-49D2-A5E7-67C9141971C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D5A4A39B-C35E-49D2-A5E7-67C9141971C2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

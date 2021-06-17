@@ -2,28 +2,30 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ScamSimulatorCore.core
+namespace CoreLibrary.core
 {
-    class Bank
+    public class Bank
     {
         public static Random RNG = new Random();
-        
-        public decimal Wallet { get; set; } = 0;
+
+        private decimal Wallet { get; set; } = 0;
         public List<Country> Countries { get; } = new List<Country>();
+        private List<Country> CountriesWithTilesLeft { get; } = new List<Country>();
         public List<Player> PlayerBase { get; } = new List<Player>();
         public List<Player> ExPlayerBase { get; } = new List<Player>();
-
+        
         public List<TileSet> MarketPlace { get; } = new List<TileSet>();
-        public decimal TransactionFlatTax { get; set; } = 7.5M;
-        public decimal TransactionPercTax { get; set; } = 1;
-        public decimal TransactionOvervalueTaxPerc { get; set; } = 5;
-        public SimOptions Options { get; }
+        private decimal TransactionFlatTax { get; set; } = 7.5M;
+        private decimal TransactionPercTax { get; set; } = 1;
+        private decimal TransactionOvervalueTaxPerc { get; set; } = 5;
+        internal SimOptions Options { get; }
         public Bank(SimOptions opt)
         {
             Options = opt;
             foreach(Country c in Seed.enumerateCountries())
             {
                 Countries.Add(c);
+                CountriesWithTilesLeft.Add(c);
             }
             CreatePlayer();
         }
@@ -196,10 +198,35 @@ namespace ScamSimulatorCore.core
             {
                 //improvements left see docs
                 double c = RNG.NextDouble();
-                int idx = (int)((c * c) * PlayerBase.Count);
+                int idx = (int)(c * PlayerBase.Count);
                 return PlayerBase[idx];
             }
         }
+        public void SortCountriesOnNewTileValue()
+        {
+            Countries.Sort((a, b) => (-a.NewTileValue.CompareTo(b.NewTileValue)));
+        }
+
+
+        public Country GetRandomCheapCountry(bool fornewtiles = false)
+        {
+            List<Country> list;
+            if (fornewtiles) list = CountriesWithTilesLeft;
+            else list = Countries;
+            
+            Country chosen = list[RNG.Next(0, list.Count - 1)];
+            double c;
+            int idx;
+            for (int x = 0; x < 10; x++)
+            {
+                c = RNG.NextDouble();
+                idx = (int)(c * list.Count);
+                if (list[idx].NewTileValue < chosen.NewTileValue)
+                    chosen = list[idx];
+            }
+            return chosen;
+        }
+
         public Country GetRandomCountry(bool fornewtiles = false) {
             //improvements left see docs
             Country chosen;
@@ -208,7 +235,7 @@ namespace ScamSimulatorCore.core
             do
             {
                 c = RNG.NextDouble();
-                idx = (int)((c * c) * Countries.Count);
+                idx = (int)(c * Countries.Count);
                 chosen = Countries[idx];
             } while (fornewtiles && chosen.SoldTiles == chosen.TotalTiles);
             return chosen;
@@ -229,6 +256,9 @@ namespace ScamSimulatorCore.core
             TileSet t = c.CreateTilesForSelling(amount);
             t.Owner = buyer;
             buyer.Portfolio.Add(t);
+
+            if (!c.CanCreateTiles(1))
+                CountriesWithTilesLeft.Remove(c);
             return true;
         }
         public bool BuyPlayersTiles(Player buyer, TileSet t)

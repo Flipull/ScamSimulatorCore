@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ScamSimulatorCore.core
+namespace CoreLibrary.core
 {
-    class Country
+    public class Country
     {
         public string Name { get; } = "Unknown";
         public decimal Worth { get; set; } = 0;
@@ -31,8 +31,8 @@ namespace ScamSimulatorCore.core
                 v += t.BuyPrice;
                 s += t.Amount;
             }
-            NewTileValue = Math.Max(0.1M, v / s) + 0.1M * (1M - 1M / (SoldTiles+1M));// + 0.1M;
-            //NewTileValue = Math.Max(0.1M, v / s) + 0.1M * (1 - SoldTiles / (decimal)TotalTiles);// + 0.1M;
+            //NewTileValue = Math.Max(0.1M, v / s) + 0.1M * (1M - 1M / (SoldTiles+1M));// + 0.1M;
+            NewTileValue = Math.Max(0.1M, v / s) + 0.1M * (1 - SoldTiles / (decimal)TotalTiles);// + 0.1M;
         }
         public List<TileSet> SoldTileSets { get; } = new List<TileSet>();
 
@@ -40,7 +40,7 @@ namespace ScamSimulatorCore.core
         {
             Name = name;
             Population = population;
-            TotalTiles = Math.Max(1, area_sq/25+10);
+            TotalTiles = Math.Max(1, area_sq/100+(long)(Math.Log(area_sq))+5);
             DensityDistributionMean = richness;
             DensityDistributionDeviation = classness;
         }
@@ -93,6 +93,8 @@ namespace ScamSimulatorCore.core
             decimal delta_value = (new_value - old_value);// * amount/TotalTiles;
 
             Worth += delta_value;
+            SoldTileSets.Remove(t);//add to end for tilevalue-calc
+            SoldTileSets.Add(t);
             UpdateTileValue();
             return true;
         }
